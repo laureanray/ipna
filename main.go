@@ -6,10 +6,8 @@ package main
 
 import (
 	"ipna/cmd"
-	"ipna/pkg/api"
 )
 
 func main() {
-	api.GenerateIndex()
 	cmd.Execute()
 }
