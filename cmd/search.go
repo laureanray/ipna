@@ -39,8 +39,11 @@ func Search(cmd *cobra.Command, args []string) {
   if len(args) < 1 {
     log.Println("asdasd") 
   }
-  githubResult, _ :=	api.SearchGithubRepos(args[0])
-  _, _ = api.ParseGithubResult(&githubResult)
+//  githubResult, _ :=	api.SearchGithubRepos(args[0])
+//  _, _ = api.ParseGithubResult(&githubResult)
+  pyResult := api.SearchFromIndex(args[0]) 
+
+  log.Println(pyResult)
 }
 
 func initConfig() {

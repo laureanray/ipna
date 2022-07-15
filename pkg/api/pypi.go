@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -46,4 +47,24 @@ func GenerateIndex() {
 
 	w.Flush()
 	textIndex.Close()
+}
+
+func SearchFromIndex(query string) []string {
+	file, e := os.Open("index/pypi.index")
+	check(e)
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	var matches []string
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), query) {
+			matches = append(matches, scanner.Text())
+		}
+
+	}
+
+	return matches
 }
