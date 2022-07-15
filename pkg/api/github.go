@@ -2,11 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/fatih/color"
 	"github.com/spf13/viper"
 )
 
@@ -32,10 +34,9 @@ const GithubApi = "https://api.github.com"
 const GITHUB_USERNAME = "github_username"
 const GITHUB_TOKEN = "github_token"
 
-func SearchGithubRepos(query string) {
-	log.Println("Searching Github Repos")
+func SearchGithubRepos(query string) (GithubResult, error) {
 	url := fmt.Sprintf(GithubApi+"/search/repositories?q=%s", query)
-	log.Println(url)
+	log.Println("Searching Github> " + url)
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("Authorization", fmt.Sprintf("%s:%s", viper.GetString(GITHUB_USERNAME), viper.GetString(GITHUB_TOKEN)))
@@ -43,7 +44,7 @@ func SearchGithubRepos(query string) {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println("No response")
+		log.Println("No response. :(")
 	}
 
 	defer resp.Body.Close()
@@ -56,6 +57,22 @@ func SearchGithubRepos(query string) {
 		fmt.Println("Cannot unmarshall JSON")
 	}
 
-	log.Print(result)
+	return result, err
+}
 
+func ParseGithubResult(githubResult *GithubResult) (GithubResult, error) {
+	if len(githubResult.Items) < 1 {
+		return *githubResult, errors.New("No github result found")
+	}
+
+	c := color.New(color.FgCyan).Add(color.Underline)
+	m := color.New(color.FgMagenta)
+
+	m.Printf("Found %d Github Repos: \n", githubResult.TotalCount)
+	m.Printf("Listing %d \n", len(githubResult.Items))
+	for _, result := range githubResult.Items {
+		c.Printf("%s\n", result.Name)
+	}
+
+	return *githubResult, errors.New("shut up")
 }
