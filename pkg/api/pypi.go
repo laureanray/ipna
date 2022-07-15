@@ -41,7 +41,6 @@ func GenerateIndex() {
 	w := bufio.NewWriter(textIndex)
 
 	for _, data := range index {
-    log.Println("Writing>")
 		_, _ = w.WriteString(data + "\n")
 	}
 
