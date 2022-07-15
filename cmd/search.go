@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"ipna/pkg/api"
 	"log"
 	"os"
 
@@ -39,14 +40,14 @@ func Search(cmd *cobra.Command, args []string) {
 }
 
 func initConfig() {
-	log.Println("Init called!")
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
 
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
-		viper.SetDefault("github_token", "<YOUR_GITHUB_TOKEN_HERE>")
+		viper.SetDefault(api.GITHUB_TOKEN, "<YOUR_GITHUB_TOKEN_HERE>")
+		viper.SetDefault(api.GITHUB_USERNAME, "<YOUR_GITHUB_USERNAME_HERE>")
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("ipna")

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/spf13/viper"
 )
 
 // TODO: Map json result to this
@@ -27,6 +29,8 @@ type Owner struct {
 }
 
 const GithubApi = "https://api.github.com"
+const GITHUB_USERNAME = "github_username"
+const GITHUB_TOKEN = "github_token"
 
 func SearchGithubRepos(query string) {
 	log.Println("Searching Github Repos")
@@ -34,7 +38,7 @@ func SearchGithubRepos(query string) {
 	log.Println(url)
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "") // TODO: Plug token from configuration
+	req.Header.Set("Authorization", fmt.Sprintf("%s:%s", viper.GetString(GITHUB_USERNAME), viper.GetString(GITHUB_TOKEN)))
 	req.Header.Set("Accept", "application/vnd.github.text-match+json")
 	resp, err := client.Do(req)
 
