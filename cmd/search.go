@@ -1,6 +1,5 @@
 /*
 Copyright © 2022 Laurean Ray Bahala <laureanraybahala@gmail.com>
-
 */
 package cmd
 
@@ -29,20 +28,8 @@ across github, npm, and other package hosting services`,
 )
 
 func init() {
-
-	viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-	viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
-	viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
-	viper.SetDefault("license", "apache")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// searchCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// searchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.AddCommand(searchCmd)
 }
 
@@ -52,20 +39,24 @@ func Search(cmd *cobra.Command, args []string) {
 }
 
 func initConfig() {
+	log.Println("Init called!")
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
+
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
-
+		viper.SetDefault("github_token", "<YOUR_GITHUB_TOKEN_HERE>")
 		viper.AddConfigPath(home)
-		viper.SetConfigType("json")
-		viper.SetConfigName(".ipna")
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("ipna")
+		viper.SafeWriteConfigAs(home + "/ipna.yaml")
 	}
-
-	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file: ", viper.ConfigFileUsed())
+		fmt.Println("Using token: ", viper.Get("github_token"))
+	} else {
+		log.Print(err)
 	}
 }
